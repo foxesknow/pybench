@@ -1,9 +1,9 @@
-from typing import AsyncIterator, Any, List
+from typing import AsyncIterable, Any, List
 
 from workbench.core import Source
 
 class NullSource(Source):
-    async def run(self) -> AsyncIterator[Any]:
+    async def run(self) -> AsyncIterable[Any]:
         yield
     
 
@@ -13,7 +13,7 @@ class NumbersSource(Source):
         self.__start = start
         self.__count = count
 
-    async def run(self) -> AsyncIterator[Any]:
+    async def run(self) -> AsyncIterable[Any]:
         start = self.__start
         count = self.__count
         
@@ -25,7 +25,7 @@ class YieldSource(Source):
         super().__init__()
         self.__values = values
 
-    async def run(self) -> AsyncIterator[Any]:
+    async def run(self) -> AsyncIterable[Any]:
         values = self.__values
         
         for i in values:

@@ -1,4 +1,4 @@
-from typing import List, AsyncIterator, Any, Optional, Callable
+from typing import List, AsyncIterable, Any, Optional, Callable
 import abc
 
 class Runnable(abc.ABC): 
@@ -6,13 +6,13 @@ class Runnable(abc.ABC):
 
 class Source(Runnable):
     @abc.abstractmethod
-    def run(self) -> AsyncIterator[Any]:
+    def run(self) -> AsyncIterable[Any]:
         pass
     
 
 class Filter(Runnable):
     @abc.abstractmethod
-    def run(self, input: AsyncIterator[Any]) -> AsyncIterator[Any]:
+    def run(self, input: AsyncIterable[Any]) -> AsyncIterable[Any]:
         pass
 
 class Job(Runnable): 
@@ -21,21 +21,21 @@ class Job(Runnable):
         pass
     
 class _PipelineStart:
-    def __init__(self, outer: Callable[[], AsyncIterator[Any]]) -> None:
+    def __init__(self, outer: Callable[[], AsyncIterable[Any]]) -> None:
         self.__outer = outer
     
-    async def __call__(self, *args: Any, **kwds: Any) -> AsyncIterator[Any]:
+    async def __call__(self, *args: Any, **kwds: Any) -> AsyncIterable[Any]:
         outer = self.__outer
 
         async for i in outer():
             yield i
 
 class _PipelineStep:
-    def __init__(self, outer: Callable[[], AsyncIterator[Any]], filter: Filter) -> None:
+    def __init__(self, outer: Callable[[], AsyncIterable[Any]], filter: Filter) -> None:
         self.__outer = outer
         self.__filter = filter
 
-    async def __call__(self, *args: Any, **kwds: Any) -> AsyncIterator[Any]:
+    async def __call__(self, *args: Any, **kwds: Any) -> AsyncIterable[Any]:
         outer = self.__outer
         filter = self.__filter
 
@@ -69,7 +69,7 @@ class PipelineJob(Job):
             pass
     
     
-    def _build_pipeline(self) -> Callable[[], AsyncIterator[Any]]:
+    def _build_pipeline(self) -> Callable[[], AsyncIterable[Any]]:
         src = self.__source
         if src is None:
             raise ValueError("no source set")
