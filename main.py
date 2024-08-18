@@ -6,7 +6,7 @@ from workbench.filters import *
 import asyncio;
 
 async def apply(value: Any) -> Any:
-    await asyncio.sleep(0.5)
+    await asyncio.sleep(1)
     return value + 5
 
 async def run(group: Group):
@@ -27,8 +27,9 @@ group.addJob(console.EchoStdoutJob(message="Hello"))
 
 pipeline = PipelineJob();
 pipeline.source = NumbersSource(0, 10)
-pipeline.add_filter(AsyncLambdaFilter(apply))
+pipeline.add_filter(LambdaFilter(lambda x: x + 200))
 pipeline.add_filter(EchoFilter())
+pipeline.add_filter(LambdaFilter(apply))
 #pipeline.add_filter(SleepFilter(seconds=1))
 #pipeline.add_filter(ReverseFilter())
 #pipeline.add_filter(EchoFilter())
