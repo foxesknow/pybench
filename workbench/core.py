@@ -68,10 +68,10 @@ class PipelineJob(Job):
     """
     A pipeline jobs takes a source of data and passes it through a series of filters
     """
-    def __init__(self) -> None:
+    def __init__(self, source: Optional[Source] = None, filters: List[Filter] = []) -> None:
         super().__init__()
-        self.__filters: List[Filter] = []
-        self.__source: Optional[Source] = None
+        self.__source: Optional[Source] = source
+        self.__filters: List[Filter] = filters.copy()        
 
     @property
     def source(self) -> Optional[Source]:
@@ -111,9 +111,9 @@ class Group:
     """
     A group contains a sequence of jobs that are executed one after the other
     """
-    def __init__(self) -> None:
-        self.__name = "no name"
-        self.__jobs: List[Job] = []
+    def __init__(self, name: str = "no name", jobs: List[Job] = []) -> None:
+        self.__name = name
+        self.__jobs: List[Job] = jobs.copy()
 
     @property
     def name(self) -> str:

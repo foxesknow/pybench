@@ -8,32 +8,18 @@ class NullJob(core.Job):
         # Does nothing
         pass
 
-class EchoStdoutJob(core.Job):
+class WriteLineJob(core.Job):
     """Echos a message to stdout"""
-    def __init__(self, message: str = "no message") -> None:
+    def __init__(self, message: str = "no message", stdout: bool = True) -> None:
         super().__init__()
         self.__message = message
+        self.__stdout = stdout
 
     async def run(self) -> None:
-        print(self.__message) 
-    
-    @property
-    def message(self):
-        return self.__message
-
-    @message.setter
-    def message(self, text: str):
-        self.__message = text
-
-
-class EchoStderrJob(core.Job):
-    """Echos a message to stderr"""
-    def __init__(self, message: str = "no message") -> None:
-        super().__init__()
-        self.__message = message
-
-    async def run(self) -> None:
-        print(self.__message, file=sys.stderr) 
+        if self.__stdout:
+            print(self.__message) 
+        else:
+            print(self.__message, file=sys.stderr) 
     
     @property
     def message(self):

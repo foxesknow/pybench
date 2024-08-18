@@ -13,27 +13,17 @@ async def run(group: Group):
     await group.run()
 
 
-echo1 = console.EchoStdoutJob(message="Hello");
-sleep = console.SleepJob(seconds=2);
-echo2 = console.EchoStdoutJob(message="world");
-
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
-group = Group()
-group.addJob(console.EchoStdoutJob(message="Hello"))
-
-
-
-pipeline = PipelineJob();
-pipeline.source = NumbersSource(0, 10)
-pipeline.add_filter(LambdaFilter(lambda x: x + 200))
-pipeline.add_filter(EchoFilter())
-pipeline.add_filter(LambdaFilter(apply))
-#pipeline.add_filter(SleepFilter(seconds=1))
-#pipeline.add_filter(ReverseFilter())
-#pipeline.add_filter(EchoFilter())
-group.addJob(pipeline)
-group.addJob(console.EchoStdoutJob(message="Goodbye"))
+group = Group(name="Test", jobs= [
+    console.WriteLineJob(message="Hello"),
+    PipelineJob(source=NumbersSource(0, 10), filters= [
+        LambdaFilter(lambda x: x + 200),
+        EchoFilter(),
+        LambdaFilter(apply),
+    ]),
+    console.WriteLineJob(message="Goodbye"),
+])
 
 loop.run_until_complete(run(group))
