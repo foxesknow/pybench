@@ -2,20 +2,35 @@ from typing import List, AsyncIterable, Any, Optional, Callable
 import abc
 
 class Runnable(abc.ABC): 
+    """
+    Base type for anything that is runnable.
+    NOTE: This will get fleshed out later
+    """
     pass
 
 class Source(Runnable):
+    """
+    Base type for anything that provides a source of data to a filter
+    """
     @abc.abstractmethod
     def run(self) -> AsyncIterable[Any]:
         pass
     
 
 class Filter(Runnable):
+    """
+    Base type for a filter that takes a sequence of value, does something
+    to them and yields a new sequence
+    """
     @abc.abstractmethod
     def run(self, input: AsyncIterable[Any]) -> AsyncIterable[Any]:
         pass
 
 class Job(Runnable): 
+    """
+    Base class for any job.
+    Jobs go into a group
+    """
     @abc.abstractmethod
     async def run(self) -> None:
         pass
@@ -44,6 +59,9 @@ class _PipelineStep:
     
     
 class PipelineJob(Job):
+    """
+    A pipeline jobs takes a source of data and passes it through a series of filters
+    """
     def __init__(self) -> None:
         super().__init__()
         self.__filters: List[Filter] = []
@@ -83,6 +101,9 @@ class PipelineJob(Job):
         return function
 
 class Group:
+    """
+    A group contains a sequence of jobs that are executed one after the other
+    """
     def __init__(self) -> None:
         self.__name = "no name"
         self.__jobs: List[Job] = []

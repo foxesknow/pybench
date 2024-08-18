@@ -9,6 +9,7 @@ class NullJob(core.Job):
         pass
 
 class EchoStdoutJob(core.Job):
+    """Echos a message to stdout"""
     def __init__(self, message: str = "no message") -> None:
         super().__init__()
         self.__message = message
@@ -26,6 +27,7 @@ class EchoStdoutJob(core.Job):
 
 
 class EchoStderrJob(core.Job):
+    """Echos a message to stderr"""
     def __init__(self, message: str = "no message") -> None:
         super().__init__()
         self.__message = message
@@ -43,6 +45,7 @@ class EchoStderrJob(core.Job):
 
 
 class SleepJob(core.Job):
+    """Sleeps for a number of seconds"""
     def __init__(self, seconds: float = 0) -> None:
         super().__init__()
         self.__seconds = seconds
