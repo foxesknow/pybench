@@ -92,7 +92,6 @@ class PipelineJob(Job):
         async for _ in sequence:
             pass
     
-    
     def _build_pipeline(self) -> Callable[[], AsyncIterable[Any]]:
         src = self.__source
         if src is None:
@@ -117,6 +116,7 @@ class Group:
 
     @property
     def name(self) -> str:
+        """The name of the group"""
         return self.__name
     
     @name.setter
@@ -124,8 +124,20 @@ class Group:
         self.__name = n
 
     def addJob(self, job: Job) -> None:
+        """Adds a new job to the group"""
         self.__jobs.append(job)
 
     async def run(self):
+        print(self.__name)
         for job in self.__jobs:
             await job.run()
+
+class Worksheet:
+    """Manages a collection of groups"""
+    def __init__(self, groups: List[Group] = []) -> None:
+        self.__groups = groups.copy()
+
+    async def run(self) -> None:
+        """Runs each group"""
+        for group in self.__groups:
+            await group.run()
