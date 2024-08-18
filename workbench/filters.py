@@ -1,4 +1,4 @@
-from typing import AsyncIterable, Any, List
+from typing import AsyncIterable, Any, List, Callable, Awaitable
 import asyncio
 
 from workbench.core import Filter
@@ -35,3 +35,44 @@ class ReverseFilter(Filter):
 
         for i in reversed(incoming_data):
             yield i
+
+class LambdaFilter(Filter):
+    """
+    A filter that calls a lambda for each item
+    """
+    def __init__(self, function: Callable[[Any], Any]) -> None:
+        super().__init__()
+
+        if asyncio.iscoroutinefunction(function):
+            raise ValueError("async callable not supported - you should use AsyncLambdaFilter")
+
+        if not callable(function):
+            raise ValueError("function is not callable")
+
+        self.function = function
+
+    async def run(self, input: AsyncIterable[Any]) -> AsyncIterable[Any]:
+        function = self.function
+        
+        async for value in input:
+            new_value = function(value)
+            yield new_value
+
+class AsyncLambdaFilter(Filter):
+    """
+    A filter that asynchronously calls a lambda for each item
+    """
+    def __init__(self, function: Callable[[Any], Awaitable[Any]]) -> None:
+        super().__init__()
+
+        if not asyncio.iscoroutinefunction(function):
+            raise ValueError("function is not async callable")
+
+        self.function = function
+
+    async def run(self, input: AsyncIterable[Any]) -> AsyncIterable[Any]:
+        function = self.function
+        
+        async for value in input:
+            new_value = await function(value)
+            yield new_value

@@ -1,6 +1,12 @@
 from typing import List, AsyncIterable, Any, Optional, Callable
 import abc
 
+class WorkbenchException(Exception):
+    """Base class for all workbench exceptions"""
+    def __init__(self, message: str):
+        super().__init__(message)
+        self.message = message
+
 class Runnable(abc.ABC): 
     """
     Base type for anything that is runnable.
@@ -90,10 +96,11 @@ class PipelineJob(Job):
     def _build_pipeline(self) -> Callable[[], AsyncIterable[Any]]:
         src = self.__source
         if src is None:
-            raise ValueError("no source set")
+            raise WorkbenchException("no source set")
 
         function = _PipelineStart(lambda: src.run())
 
+        # This is a LOT easier in C# which has proper block scoping!!
         for filter in self.__filters:
             next = _PipelineStep(function, filter)
             function = next

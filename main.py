@@ -5,6 +5,10 @@ from workbench.filters import *
 
 import asyncio;
 
+async def apply(value: Any) -> Any:
+    await asyncio.sleep(0.5)
+    return value + 5
+
 async def run(group: Group):
     await group.run()
 
@@ -23,10 +27,11 @@ group.addJob(console.EchoStdoutJob(message="Hello"))
 
 pipeline = PipelineJob();
 pipeline.source = NumbersSource(0, 10)
+pipeline.add_filter(AsyncLambdaFilter(apply))
 pipeline.add_filter(EchoFilter())
-pipeline.add_filter(SleepFilter(seconds=1))
-pipeline.add_filter(ReverseFilter())
-pipeline.add_filter(EchoFilter())
+#pipeline.add_filter(SleepFilter(seconds=1))
+#pipeline.add_filter(ReverseFilter())
+#pipeline.add_filter(EchoFilter())
 group.addJob(pipeline)
 group.addJob(console.EchoStdoutJob(message="Goodbye"))
 
