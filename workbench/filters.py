@@ -73,3 +73,68 @@ class LambdaFilter(Filter):
         async for value in input:
             new_value = function(value)
             yield new_value
+
+class PredicateFilterBase(Filter):
+    """
+    Base class for filters that use a predicate to do something
+    """
+    def __init__(self, predicate: Callable[[Any], Any]) -> None:
+        super().__init__()
+
+        self.predicate = predicate
+
+        if asyncio.iscoroutinefunction(predicate):
+            self.__runAsync = True
+        elif callable(predicate):
+            self.__runAsync = False
+        else:
+            raise ValueError("function is not callable")
+    
+    async def _apply(self, value: Any):
+        predicate = self.predicate
+
+        if self.__runAsync:
+            return await predicate(value)
+        else:
+            return predicate(value)    
+        
+class TakeWhileFilter(PredicateFilterBase):
+    """
+    Yields values until the predicate returns false, at which point we'll stop processing
+    """
+    def __init__(self, predicate: Callable[[Any], Any]) -> None:
+        super().__init__(predicate)
+
+    async def run(self, input: AsyncIterable[Any]) -> AsyncIterable[Any]:
+        async for value in input:
+            if await self._apply(value):
+                yield value
+            else:
+                break
+            
+class TakeUntilFilter(PredicateFilterBase):
+    """
+    Yields values until the predicate returns false, at which point we'll stop processing
+    """
+    def __init__(self, predicate: Callable[[Any], Any]) -> None:
+        super().__init__(predicate)
+
+    async def run(self, input: AsyncIterable[Any]) -> AsyncIterable[Any]:
+        async for value in input:
+            if await self._apply(value):
+                break
+            else:
+                yield value
+
+
+class WhereFilter(PredicateFilterBase):
+    """
+    Yields values where the predicates returns true
+    """
+    def __init__(self, predicate: Callable[[Any], Any]) -> None:
+        super().__init__(predicate)
+
+    async def run(self, input: AsyncIterable[Any]) -> AsyncIterable[Any]:
+        async for value in input:
+            if await self._apply(value):
+                yield value

@@ -6,7 +6,7 @@ from workbench.filters import *
 import asyncio;
 
 async def apply(value: Any) -> Any:
-    await asyncio.sleep(1)
+    #await asyncio.sleep(1)
     return value + 5
 
 async def run(sheet: Worksheet):
@@ -20,9 +20,10 @@ worksheet = Worksheet(groups = [
     Group(name="Print some numbers", jobs=[
         WriteLineJob(message="Hello"),
         PipelineJob(source=NumbersSource(0, 10), filters=[
+            WhereFilter(lambda x: x in [1, 3, 5]),
             LambdaFilter(lambda x: x + 200),
             EchoFilter(),
-            LambdaFilter(apply),
+            LambdaFilter(apply),            
         ]),
         WriteLineJob(message="Goodbye"),
     ]),
