@@ -21,9 +21,8 @@ worksheet = Worksheet(groups = [
         WriteLineJob(message="Hello"),
         PipelineJob(source=NumbersSource(0, 10), filters=[
             WhereFilter(lambda x: x in [1, 3, 5]),
-            LambdaFilter(lambda x: x + 200),
+            SelectFilter(lambda x: "The number is " + str(x)),
             EchoFilter(),
-            LambdaFilter(apply),            
         ]),
         WriteLineJob(message="Goodbye"),
     ]),

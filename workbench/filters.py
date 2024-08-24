@@ -21,7 +21,7 @@ class SleepFilter(Filter):
             await asyncio.sleep(self.__sleep)
             yield value
     
-            
+
 class ReverseFilter(Filter):
     """
     Reverse the entire interable input.
@@ -37,10 +37,10 @@ class ReverseFilter(Filter):
             yield i
 
 
-class LambdaFilter(Filter):
+class SelectFilter(Filter):
     """
-    A filter that calls a lambda for each item.
-    The filter can handle synchronous and asynchronous functions
+    A filter that calls a lambda for each item to transform the item.
+    The filter can handle synchronous and asynchronous functions.
     """
     def __init__(self, function: Callable[[Any], Any]) -> None:
         super().__init__()
@@ -73,6 +73,7 @@ class LambdaFilter(Filter):
         async for value in input:
             new_value = function(value)
             yield new_value
+
 
 class PredicateFilterBase(Filter):
     """
